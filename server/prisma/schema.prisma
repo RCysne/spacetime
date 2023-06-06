@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Começa com um modelo, forma generalizada de conexão com os variados modelos de banco de dados. 
+// Nesse exemplo eu começo com o usuário (uma tabela de usuários) 
+// Usando o campo id e dizendo que é uma string, e com o @id eu indico que o id é a primary key
+// Usando o default e dentro o uuid (universal Unique ID), que vai gerar automaticamente as ids dos usuários 
+
+// Table User
+model User {
+  id        String @id @default(uuid())
+  githubId  Int    @unique
+  name      String
+  login     String
+  avatarUrl String
+
+  // A linha abaixo não são colunas, são apenas um entendimento relacional das tabelas através do prisma
+  memories Memory[]
+}
+
+// Table Memory
+model Memory {
+  id        String   @id @default(uuid())
+  coverUrl  String
+  content   String
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // As linhas abaixo não são colunas, são apenas um entendimento relacional das tabelas através do prisma
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
